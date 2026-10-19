@@ -65,16 +65,11 @@ export function AssistantChat() {
   if (commandCenterOpen) {
     return (
       <div className="relative flex min-h-0 flex-1 flex-col" data-testid="assistant-command-center">
-        <button
-          type="button"
-          onClick={() => setCommandCenterOpen(false)}
-          className="absolute right-5 top-5 z-10 inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-background/90 px-3 text-sm text-foreground shadow-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Return to chat"
-        >
-          <LayoutDashboard size={15} aria-hidden="true" />
-          Back to chat
-        </button>
-        <CommandCenterView onStartConversation={() => { setSurface("chat"); setCommandCenterOpen(false); }} onNavigate={() => setCommandCenterOpen(false)} />
+        <CommandCenterView
+          onClose={() => setCommandCenterOpen(false)}
+          onStartConversation={() => { setSurface("chat"); setCommandCenterOpen(false); }}
+          onNavigate={() => setCommandCenterOpen(false)}
+        />
       </div>
     );
   }
