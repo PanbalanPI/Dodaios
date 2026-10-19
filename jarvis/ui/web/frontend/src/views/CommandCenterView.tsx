@@ -162,10 +162,6 @@ export function CommandCenterView({ onStartConversation }: { onStartConversation
                 Jump straight into the work you want to do.
               </p>
             </div>
-            <span className="hidden items-center gap-2 text-xs text-muted-foreground sm:inline-flex">
-              <span className="h-2 w-2 rounded-full bg-primary" />
-              Connected to your app workspace
-            </span>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {destinations.map((destination, index) => (
