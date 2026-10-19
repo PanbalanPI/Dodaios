@@ -1,5 +1,6 @@
 import {
   Loader2,
+  LayoutDashboard,
   Mic,
   ChevronDown,
   MoreHorizontal,
@@ -341,7 +342,7 @@ export function Sidebar({
       alert={item.id === "apikeys" && apikeysHasError} alertTitle={t("sidebar.apikeys_alert")}
       warn={item.id === "plugins" && pluginsNeedReconnect}
       warnTitle={pluginWarnTitle}
-      onClick={() => { setActive(item.id); }} />;
+      onClick={() => { useHomeStore.getState().setCommandCenterOpen(false); setActive(item.id); }} />;
   };
 
   return (
@@ -523,10 +524,27 @@ export function Sidebar({
             <li><button type="button" data-testid="sidebar-new-chat" data-tour="new-chat"
               aria-label={t("sidebar.new_chat")} title={t("sidebar.new_chat")}
               className={cn(rowClass, onEmptyChat && "bg-secondary text-foreground-strong")}
-              onClick={() => { useHomeStore.getState().setSurface("chat"); startNewTextChat(); }}>
+              onClick={() => { useHomeStore.getState().setCommandCenterOpen(false); useHomeStore.getState().setSurface("chat"); startNewTextChat(); }}>
               <Plus aria-hidden strokeWidth={1.75} className="h-[18px] w-[18px] shrink-0" />
               {!railed && <span>{t("sidebar.new_chat")}</span>}
             </button></li>
+            <li>
+              <button
+                type="button"
+                data-testid="sidebar-command-center"
+                aria-label="Personal command center"
+                title="Personal command center"
+                className={clsx(rowClass, "text-muted-foreground")}
+                onClick={() => {
+                  useHomeStore.getState().openAgentChat(null);
+                  useHomeStore.getState().setCommandCenterOpen(true);
+                  setActive("chats");
+                }}
+              >
+                <LayoutDashboard aria-hidden strokeWidth={1.75} className="h-[18px] w-[18px] shrink-0" />
+                {!railed && <span>Command center</span>}
+              </button>
+            </li>
             {renderRow(findItem("agents"))}
             {renderRow(findItem("dictation"))}
           </ul>
@@ -555,7 +573,7 @@ export function Sidebar({
           needs care, must be visible without opening anything. */}
       <div className="shrink-0 border-t border-border px-2 py-1.5">
         <div className={cn("flex items-center gap-0.5", railed && "flex-col")}>
-          <button type="button" {...profilePrefetch} onClick={() => setActive("profile")} title={t("nav.profile")}
+          <button type="button" {...profilePrefetch} onClick={() => { useHomeStore.getState().setCommandCenterOpen(false); setActive("profile"); }} title={t("nav.profile")}
             data-testid="sidebar-profile-toggle"
             data-tour="settings"
             className={cn(rowClass, "min-w-0 flex-1", hubActive && "jarvis-nav-active bg-secondary text-foreground")}>
@@ -573,7 +591,7 @@ export function Sidebar({
           {/* The update lives here now, where Claude keeps its download icon:
               in sight on every screen, not among the window buttons. */}
           <Suspense fallback={null}><UpdateButton placement="sidebar" /></Suspense>
-          <button type="button" {...marketplacePrefetch} onClick={() => setActive("marketplace")} title={t("nav.marketplace")}
+          <button type="button" {...marketplacePrefetch} onClick={() => { useHomeStore.getState().setCommandCenterOpen(false); setActive("marketplace"); }} title={t("nav.marketplace")}
             aria-label={t("nav.marketplace")} data-testid="nav-row-marketplace"
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <MarketplaceIcon aria-hidden strokeWidth={1.75} className="h-4 w-4" />

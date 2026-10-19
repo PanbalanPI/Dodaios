@@ -17,6 +17,8 @@ import { useEventStore } from "@/store/events";
  * `set` turns into a no-op without waking a single subscriber.
  */
 interface HomeStore {
+  commandCenterOpen: boolean;
+  setCommandCenterOpen: (open: boolean) => void;
   jarvisCardMode: "voice" | "chat";
   setJarvisCardMode: (mode: "voice" | "chat") => void;
   /**
@@ -96,6 +98,8 @@ export function reduceLiveReply(current: string, name: string, payload: unknown)
 }
 
 export const useHomeStore = create<HomeStore>((set, get) => ({
+  commandCenterOpen: false,
+  setCommandCenterOpen: (commandCenterOpen) => set({ commandCenterOpen }),
   jarvisCardMode: "voice",
   setJarvisCardMode: (jarvisCardMode) => set({ jarvisCardMode }),
   agentChatId: null,
