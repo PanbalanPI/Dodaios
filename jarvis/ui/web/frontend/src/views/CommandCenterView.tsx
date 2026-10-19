@@ -9,7 +9,6 @@ import {
   MessageSquare,
   Settings2,
   Sparkles,
-  X,
 } from "lucide-react";
 import { useEventStore, type SectionId } from "@/store/events";
 
@@ -77,9 +76,11 @@ const secondaryDestinations: Destination[] = [
 function DestinationCard({
   destination,
   featured = false,
+  onStartConversation,
 }: {
   destination: Destination;
   featured?: boolean;
+  onStartConversation: () => void;
 }) {
   const setActiveSection = useEventStore((state) => state.setActiveSection);
   const Icon = destination.icon;
@@ -87,7 +88,7 @@ function DestinationCard({
   return (
     <button
       type="button"
-      onClick={() => setActiveSection(destination.id)}
+      onClick={() => destination.id === "chats" ? onStartConversation() : setActiveSection(destination.id)}
       className={[
         "group flex min-h-36 w-full flex-col items-start rounded-2xl border p-5 text-left transition-colors",
         "border-border bg-card/70 hover:border-primary/50 hover:bg-accent/50",
@@ -172,6 +173,7 @@ export function CommandCenterView({ onStartConversation }: { onStartConversation
                 key={destination.id}
                 destination={destination}
                 featured={index === 0}
+                onStartConversation={onStartConversation}
               />
             ))}
           </div>
@@ -188,7 +190,7 @@ export function CommandCenterView({ onStartConversation }: { onStartConversation
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {secondaryDestinations.map((destination) => (
-              <DestinationCard key={destination.id} destination={destination} />
+              <DestinationCard key={destination.id} destination={destination} onStartConversation={onStartConversation} />
             ))}
           </div>
         </section>
