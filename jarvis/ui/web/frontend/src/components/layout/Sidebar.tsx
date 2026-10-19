@@ -1,5 +1,6 @@
 import {
   Loader2,
+  LayoutDashboard,
   Mic,
   ChevronDown,
   MoreHorizontal,
@@ -527,6 +528,23 @@ export function Sidebar({
               <Plus aria-hidden strokeWidth={1.75} className="h-[18px] w-[18px] shrink-0" />
               {!railed && <span>{t("sidebar.new_chat")}</span>}
             </button></li>
+            <li>
+              <button
+                type="button"
+                data-testid="sidebar-command-center"
+                aria-label="Personal command center"
+                title="Personal command center"
+                className={cn(rowClass, "text-muted-foreground")}
+                onClick={() => {
+                  useHomeStore.getState().openAgentChat(null);
+                  useHomeStore.getState().setCommandCenterOpen(true);
+                  setActive("chats");
+                }}
+              >
+                <LayoutDashboard aria-hidden strokeWidth={1.75} className="h-[18px] w-[18px] shrink-0" />
+                {!railed && <span>Command center</span>}
+              </button>
+            </li>
             {renderRow(findItem("agents"))}
             {renderRow(findItem("dictation"))}
           </ul>
