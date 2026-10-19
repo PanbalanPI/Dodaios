@@ -524,7 +524,7 @@ export function Sidebar({
             <li><button type="button" data-testid="sidebar-new-chat" data-tour="new-chat"
               aria-label={t("sidebar.new_chat")} title={t("sidebar.new_chat")}
               className={cn(rowClass, onEmptyChat && "bg-secondary text-foreground-strong")}
-              onClick={() => { useHomeStore.getState().setSurface("chat"); startNewTextChat(); }}>
+              onClick={() => { useHomeStore.getState().setCommandCenterOpen(false); useHomeStore.getState().setSurface("chat"); startNewTextChat(); }}>
               <Plus aria-hidden strokeWidth={1.75} className="h-[18px] w-[18px] shrink-0" />
               {!railed && <span>{t("sidebar.new_chat")}</span>}
             </button></li>
