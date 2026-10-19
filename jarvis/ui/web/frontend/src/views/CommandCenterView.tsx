@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ArrowRight,
   BookOpen,
@@ -14,6 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useEventStore, type SectionId } from "@/store/events";
+import { createMemoryPage, MEMORY_KEYS } from "@/lib/memoryApi";
 
 type Destination = {
   id: SectionId;
@@ -163,6 +165,9 @@ function DestinationCard({
 }
 
 function ProjectIntake({ onStartProject }: { onStartProject: (prompt: string) => void }) {
+  const queryClient = useQueryClient();
+  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<{ kind: "success" | "error"; message: string } | null>(null);
   const [brief, setBrief] = useState<ProjectBrief>({
     idea: "",
     outcome: "",
@@ -178,6 +183,25 @@ function ProjectIntake({ onStartProject }: { onStartProject: (prompt: string) =>
     event.preventDefault();
     if (!brief.idea.trim()) return;
     onStartProject(buildProjectPrompt(brief));
+  };
+
+  const saveBrief = async () => {
+    if (!brief.idea.trim() || saving) return;
+    setSaving(true);
+    setSaveStatus(null);
+    const title = brief.idea.trim().replace(/\\s+/g, " ").slice(0, 80);
+    try {
+      await createMemoryPage("project", title, buildProjectPrompt(brief));
+      await queryClient.invalidateQueries({ queryKey: MEMORY_KEYS.all });
+      setSaveStatus({ kind: "success", message: "Project brief saved to Memory." });
+    } catch (error) {
+      setSaveStatus({
+        kind: "error",
+        message: error instanceof Error ? error.message : "Could not save the project brief.",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   const fieldClass =
@@ -243,19 +267,35 @@ function ProjectIntake({ onStartProject }: { onStartProject: (prompt: string) =>
             data-testid="project-constraints"
           />
         </label>
-        <div className="flex flex-col gap-3 md:col-span-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 md:col-span-2">
           <p className="text-xs leading-5 text-muted-foreground">
-            Nothing is sent to an AI provider until you review the draft and press Send in chat.
+            Preparing a brief never sends it to an AI provider. Saving writes a project page to your local Memory vault.
           </p>
-          <button
-            type="submit"
-            disabled={!brief.idea.trim()}
-            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            data-testid="project-intake-submit"
-          >
-            Prepare project brief
-            <ArrowRight size={16} aria-hidden="true" />
-          </button>
+          {saveStatus && (
+            <p role={saveStatus.kind === "error" ? "alert" : "status"} className={saveStatus.kind === "error" ? "text-sm text-destructive" : "text-sm text-muted-foreground"}>
+              {saveStatus.message}
+            </p>
+          )}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+            <button
+              type="button"
+              onClick={() => void saveBrief()}
+              disabled={!brief.idea.trim() || saving}
+              className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              data-testid="project-intake-save"
+            >
+              {saving ? "Saving…" : "Save brief to Memory"}
+            </button>
+            <button
+              type="submit"
+              disabled={!brief.idea.trim()}
+              className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              data-testid="project-intake-submit"
+            >
+              Prepare project brief
+              <ArrowRight size={16} aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </form>
     </section>
