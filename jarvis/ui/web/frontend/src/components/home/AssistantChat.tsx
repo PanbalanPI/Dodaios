@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
+import { LayoutDashboard } from "lucide-react";
 
 import { VoiceStage } from "@/components/home/VoiceStage";
 import { transcriptFromTimeline, useVoiceModeSwitch } from "@/components/home/assistantStatus";
@@ -6,6 +7,7 @@ import { useT } from "@/i18n";
 import { useAgentChatStore } from "@/store/agentChat";
 import { useEventStore } from "@/store/events";
 import { useHomeStore } from "@/store/home";
+import { CommandCenterView } from "@/views/CommandCenterView";
 
 const ChatStage = lazy(() =>
   import("@/components/home/ChatStage").then((module) => ({ default: module.ChatStage })),
@@ -26,6 +28,7 @@ const HomeAgentChat = lazy(() => import("@/components/home/HomeAgentChat"));
  */
 export function AssistantChat() {
   const t = useT();
+  const [commandCenterOpen, setCommandCenterOpen] = useState(false);
   const surface = useHomeStore((s) => s.surface);
   const agentChatId = useHomeStore((s) => s.agentChatId);
   const voice = useVoiceModeSwitch();
@@ -57,8 +60,35 @@ export function AssistantChat() {
     );
   }
 
+  if (commandCenterOpen) {
+    return (
+      <div className="relative flex min-h-0 flex-1 flex-col" data-testid="assistant-command-center">
+        <button
+          type="button"
+          onClick={() => setCommandCenterOpen(false)}
+          className="absolute right-5 top-5 z-10 inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-background/90 px-3 text-sm text-foreground shadow-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          aria-label="Return to chat"
+        >
+          <LayoutDashboard size={15} aria-hidden="true" />
+          Back to chat
+        </button>
+        <CommandCenterView onStartConversation={() => setCommandCenterOpen(false)} />
+      </div>
+    );
+  }
+
   return (
     <div className="relative flex min-h-0 flex-1 flex-col" data-testid="assistant-chat">
+      <button
+        type="button"
+        onClick={() => setCommandCenterOpen(true)}
+        className="absolute right-4 top-3 z-10 inline-flex min-h-9 items-center gap-2 rounded-lg border border-border/80 bg-background/90 px-3 text-xs font-medium text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label="Open personal command center"
+        title="Personal command center"
+      >
+        <LayoutDashboard size={15} aria-hidden="true" />
+        Command center
+      </button>
       {surface === "chat" ? (
         <Suspense
           fallback={
