@@ -8,6 +8,7 @@ import { useAgentChatStore } from "@/store/agentChat";
 import { useEventStore } from "@/store/events";
 import { useHomeStore } from "@/store/home";
 import { CommandCenterView } from "@/views/CommandCenterView";
+import { startNewTextChat } from "@/lib/newChat";
 
 const ChatStage = lazy(() =>
   import("@/components/home/ChatStage").then((module) => ({ default: module.ChatStage })),
@@ -67,7 +68,7 @@ export function AssistantChat() {
       <div className="relative flex min-h-0 flex-1 flex-col" data-testid="assistant-command-center">
         <CommandCenterView
           onClose={() => setCommandCenterOpen(false)}
-          onStartConversation={() => { setSurface("chat"); setCommandCenterOpen(false); }}
+          onStartConversation={() => { setSurface("chat"); setCommandCenterOpen(false); startNewTextChat(); }}
           onNavigate={() => setCommandCenterOpen(false)}
         />
       </div>
