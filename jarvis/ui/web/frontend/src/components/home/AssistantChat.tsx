@@ -30,6 +30,7 @@ export function AssistantChat() {
   const t = useT();
   const [commandCenterOpen, setCommandCenterOpen] = useState(false);
   const surface = useHomeStore((s) => s.surface);
+  const setSurface = useHomeStore((s) => s.setSurface);
   const agentChatId = useHomeStore((s) => s.agentChatId);
   const voice = useVoiceModeSwitch();
   const chatItems = useAgentChatStore((s) => s.timeline.items);
@@ -72,7 +73,7 @@ export function AssistantChat() {
           <LayoutDashboard size={15} aria-hidden="true" />
           Back to chat
         </button>
-        <CommandCenterView onStartConversation={() => setCommandCenterOpen(false)} />
+        <CommandCenterView onStartConversation={() => { setSurface("chat"); setCommandCenterOpen(false); }} />
       </div>
     );
   }
