@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { CommandCenterView } from "@/views/CommandCenterView";
+import { buildProjectPrompt, CommandCenterView } from "@/views/CommandCenterView";
 
 const events = vi.hoisted(() => ({ setActiveSection: vi.fn() }));
 vi.mock("@/store/events", () => ({
@@ -18,6 +18,7 @@ describe("CommandCenterView", () => {
     render(
       <CommandCenterView
         onStartConversation={vi.fn()}
+        onStartProject={vi.fn()}
         onNavigate={vi.fn()}
         onClose={vi.fn()}
       />,
@@ -37,6 +38,7 @@ describe("CommandCenterView", () => {
     render(
       <CommandCenterView
         onStartConversation={onStartConversation}
+        onStartProject={vi.fn()}
         onNavigate={onNavigate}
         onClose={vi.fn()}
       />,
@@ -55,6 +57,7 @@ describe("CommandCenterView", () => {
     render(
       <CommandCenterView
         onStartConversation={vi.fn()}
+        onStartProject={vi.fn()}
         onNavigate={onNavigate}
         onClose={vi.fn()}
       />,
@@ -72,6 +75,7 @@ describe("CommandCenterView", () => {
     render(
       <CommandCenterView
         onStartConversation={vi.fn()}
+        onStartProject={vi.fn()}
         onNavigate={vi.fn()}
         onClose={onClose}
       />,
@@ -80,4 +84,43 @@ describe("CommandCenterView", () => {
     fireEvent.click(screen.getByRole("button", { name: "Back to chat" }));
     expect(onClose).toHaveBeenCalledOnce();
   });
+});
+
+it("builds a structured, free-first project prompt without sending it automatically", () => {
+  const prompt = buildProjectPrompt({
+    idea: "Create a study planner",
+    outcome: "Track assignments and deadlines",
+    platform: "Web app",
+    constraints: "Free-first; no paid APIs",
+  });
+
+  expect(prompt).toContain("Create a study planner");
+  expect(prompt).toContain("Track assignments and deadlines");
+  expect(prompt).toContain("Web app");
+  expect(prompt).toContain("Free-first; no paid APIs");
+  expect(prompt).toContain("do not trigger paid services or API usage without my approval");
+});
+
+it("hands the completed project brief to the chat for review", () => {
+  const onStartProject = vi.fn();
+  render(
+    <CommandCenterView
+      onStartConversation={vi.fn()}
+      onStartProject={onStartProject}
+      onNavigate={vi.fn()}
+      onClose={vi.fn()}
+    />,
+  );
+
+  fireEvent.change(screen.getByTestId("project-idea"), {
+    target: { value: "Create an NCC attendance tracker" },
+  });
+  fireEvent.change(screen.getByTestId("project-platform"), {
+    target: { value: "Web app" },
+  });
+  fireEvent.click(screen.getByTestId("project-intake-submit"));
+
+  expect(onStartProject).toHaveBeenCalledOnce();
+  expect(onStartProject.mock.calls[0][0]).toContain("Create an NCC attendance tracker");
+  expect(onStartProject.mock.calls[0][0]).toContain("Web app");
 });
