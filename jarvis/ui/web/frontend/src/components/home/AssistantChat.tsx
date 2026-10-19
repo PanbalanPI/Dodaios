@@ -9,6 +9,7 @@ import { useEventStore } from "@/store/events";
 import { useHomeStore } from "@/store/home";
 import { CommandCenterView } from "@/views/CommandCenterView";
 import { startNewTextChat } from "@/lib/newChat";
+import { writeComposerDraft } from "@/components/agentchat/composerDrafts";
 
 const ChatStage = lazy(() =>
   import("@/components/home/ChatStage").then((module) => ({ default: module.ChatStage })),
@@ -69,6 +70,14 @@ export function AssistantChat() {
         <CommandCenterView
           onClose={() => setCommandCenterOpen(false)}
           onStartConversation={() => { setSurface("chat"); setCommandCenterOpen(false); startNewTextChat(); }}
+          onStartProject={(prompt) => {
+            // Start first because newChat clears the blank draft; seed the
+            // prepared brief afterward so it remains reviewable in the composer.
+            setSurface("chat");
+            startNewTextChat();
+            writeComposerDraft(useAgentChatStore, null, { text: prompt, choices: [] });
+            setCommandCenterOpen(false);
+          }}
           onNavigate={() => setCommandCenterOpen(false)}
         />
       </div>
