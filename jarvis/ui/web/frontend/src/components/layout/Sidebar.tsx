@@ -534,7 +534,7 @@ export function Sidebar({
                 data-testid="sidebar-command-center"
                 aria-label="Personal command center"
                 title="Personal command center"
-                className={cn(rowClass, "text-muted-foreground")}
+                className={clsx(rowClass, "text-muted-foreground")}
                 onClick={() => {
                   useHomeStore.getState().openAgentChat(null);
                   useHomeStore.getState().setCommandCenterOpen(true);
