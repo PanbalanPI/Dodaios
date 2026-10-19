@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { LayoutDashboard } from "lucide-react";
 
 import { VoiceStage } from "@/components/home/VoiceStage";
@@ -28,7 +28,8 @@ const HomeAgentChat = lazy(() => import("@/components/home/HomeAgentChat"));
  */
 export function AssistantChat() {
   const t = useT();
-  const [commandCenterOpen, setCommandCenterOpen] = useState(false);
+  const commandCenterOpen = useHomeStore((s) => s.commandCenterOpen);
+  const setCommandCenterOpen = useHomeStore((s) => s.setCommandCenterOpen);
   const surface = useHomeStore((s) => s.surface);
   const setSurface = useHomeStore((s) => s.setSurface);
   const agentChatId = useHomeStore((s) => s.agentChatId);
@@ -73,7 +74,7 @@ export function AssistantChat() {
           <LayoutDashboard size={15} aria-hidden="true" />
           Back to chat
         </button>
-        <CommandCenterView onStartConversation={() => { setSurface("chat"); setCommandCenterOpen(false); }} />
+        <CommandCenterView onStartConversation={() => { setSurface("chat"); setCommandCenterOpen(false); }} onNavigate={() => setCommandCenterOpen(false)} />
       </div>
     );
   }
