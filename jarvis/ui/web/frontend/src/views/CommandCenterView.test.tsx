@@ -4,8 +4,19 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { buildProjectPrompt, CommandCenterView } from "@/views/CommandCenterView";
 
 const events = vi.hoisted(() => ({ setActiveSection: vi.fn() }));
+const memoryApi = vi.hoisted(() => ({
+  createMemoryPage: vi.fn(),
+  invalidateQueries: vi.fn(),
+}));
 vi.mock("@/store/events", () => ({
   useEventStore: (select: (state: typeof events) => unknown) => select(events),
+}));
+vi.mock("@tanstack/react-query", () => ({
+  useQueryClient: () => ({ invalidateQueries: memoryApi.invalidateQueries }),
+}));
+vi.mock("@/lib/memoryApi", () => ({
+  createMemoryPage: memoryApi.createMemoryPage,
+  MEMORY_KEYS: { all: ["wiki", "memory"] },
 }));
 
 afterEach(() => {
@@ -123,4 +134,28 @@ it("hands the completed project brief to the chat for review", () => {
   expect(onStartProject).toHaveBeenCalledOnce();
   expect(onStartProject.mock.calls[0][0]).toContain("Create an NCC attendance tracker");
   expect(onStartProject.mock.calls[0][0]).toContain("Web app");
+});
+
+it("saves a project brief to Memory only after the explicit save action", async () => {
+  memoryApi.createMemoryPage.mockResolvedValue({ ok: true, path: "projects/ncc-attendance-tracker.md" });
+  render(
+    <CommandCenterView
+      onStartConversation={vi.fn()}
+      onStartProject={vi.fn()}
+      onNavigate={vi.fn()}
+      onClose={vi.fn()}
+    />,
+  );
+
+  fireEvent.change(screen.getByTestId("project-idea"), {
+    target: { value: "Create an NCC attendance tracker" },
+  });
+  fireEvent.click(screen.getByTestId("project-intake-save"));
+
+  await screen.findByRole("status");
+  expect(memoryApi.createMemoryPage).toHaveBeenCalledOnce();
+  expect(memoryApi.createMemoryPage.mock.calls[0][0]).toBe("project");
+  expect(memoryApi.createMemoryPage.mock.calls[0][1]).toBe("Create an NCC attendance tracker");
+  expect(memoryApi.createMemoryPage.mock.calls[0][2]).toContain("Create an NCC attendance tracker");
+  expect(memoryApi.invalidateQueries).toHaveBeenCalledWith({ queryKey: ["wiki", "memory"] });
 });
