@@ -78,13 +78,11 @@ function DestinationCard({
   featured = false,
   onStartConversation,
   onNavigate,
-  onClose,
 }: {
   destination: Destination;
   featured?: boolean;
   onStartConversation: () => void;
   onNavigate: () => void;
-  onClose: () => void;
 }) {
   const setActiveSection = useEventStore((state) => state.setActiveSection);
   const Icon = destination.icon;
@@ -184,7 +182,6 @@ export function CommandCenterView({ onStartConversation, onNavigate, onClose }: 
                 featured={index === 0}
                 onStartConversation={onStartConversation}
                 onNavigate={onNavigate}
-                onClose={onClose}
               />
             ))}
           </div>
@@ -201,7 +198,7 @@ export function CommandCenterView({ onStartConversation, onNavigate, onClose }: 
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {secondaryDestinations.map((destination) => (
-              <DestinationCard key={destination.id} destination={destination} onStartConversation={onStartConversation} onNavigate={onNavigate} onClose={onClose} />
+              <DestinationCard key={destination.id} destination={destination} onStartConversation={onStartConversation} onNavigate={onNavigate} />
             ))}
           </div>
         </section>
