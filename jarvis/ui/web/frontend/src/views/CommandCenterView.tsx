@@ -77,10 +77,12 @@ function DestinationCard({
   destination,
   featured = false,
   onStartConversation,
+  onNavigate,
 }: {
   destination: Destination;
   featured?: boolean;
   onStartConversation: () => void;
+  onNavigate: () => void;
 }) {
   const setActiveSection = useEventStore((state) => state.setActiveSection);
   const Icon = destination.icon;
@@ -88,7 +90,7 @@ function DestinationCard({
   return (
     <button
       type="button"
-      onClick={() => destination.id === "chats" ? onStartConversation() : setActiveSection(destination.id)}
+      onClick={() => { if (destination.id === "chats") { onStartConversation(); return; } onNavigate(); setActiveSection(destination.id); }}
       className={[
         "group flex min-h-36 w-full flex-col items-start rounded-2xl border p-5 text-left transition-colors",
         "border-border bg-card/70 hover:border-primary/50 hover:bg-accent/50",
@@ -120,7 +122,7 @@ function DestinationCard({
  * It deliberately reads no fabricated status or task data: every card opens
  * the real section that owns that capability.
  */
-export function CommandCenterView({ onStartConversation }: { onStartConversation: () => void }) {
+export function CommandCenterView({ onStartConversation, onNavigate }: { onStartConversation: () => void; onNavigate: () => void }) {
   return (
     <main
       className="h-full min-h-0 overflow-y-auto bg-background"
@@ -170,6 +172,7 @@ export function CommandCenterView({ onStartConversation }: { onStartConversation
                 destination={destination}
                 featured={index === 0}
                 onStartConversation={onStartConversation}
+                onNavigate={onNavigate}
               />
             ))}
           </div>
@@ -186,7 +189,7 @@ export function CommandCenterView({ onStartConversation }: { onStartConversation
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {secondaryDestinations.map((destination) => (
-              <DestinationCard key={destination.id} destination={destination} onStartConversation={onStartConversation} />
+              <DestinationCard key={destination.id} destination={destination} onStartConversation={onStartConversation} onNavigate={onNavigate} />
             ))}
           </div>
         </section>
