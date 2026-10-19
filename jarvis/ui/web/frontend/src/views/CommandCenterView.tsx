@@ -78,11 +78,13 @@ function DestinationCard({
   featured = false,
   onStartConversation,
   onNavigate,
+  onClose,
 }: {
   destination: Destination;
   featured?: boolean;
   onStartConversation: () => void;
   onNavigate: () => void;
+  onClose: () => void;
 }) {
   const setActiveSection = useEventStore((state) => state.setActiveSection);
   const Icon = destination.icon;
@@ -122,7 +124,7 @@ function DestinationCard({
  * It deliberately reads no fabricated status or task data: every card opens
  * the real section that owns that capability.
  */
-export function CommandCenterView({ onStartConversation, onNavigate }: { onStartConversation: () => void; onNavigate: () => void }) {
+export function CommandCenterView({ onStartConversation, onNavigate, onClose }: { onStartConversation: () => void; onNavigate: () => void; onClose: () => void }) {
   return (
     <main
       className="h-full min-h-0 overflow-y-auto bg-background"
@@ -143,15 +145,24 @@ export function CommandCenterView({ onStartConversation, onNavigate }: { onStart
               with your assistant.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={onStartConversation}
-            className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <MessageSquare size={17} aria-hidden="true" />
-            Start a conversation
-            <ArrowRight size={16} aria-hidden="true" />
-          </button>
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              Back to chat
+            </button>
+            <button
+              type="button"
+              onClick={onStartConversation}
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            >
+              <MessageSquare size={17} aria-hidden="true" />
+              Start a conversation
+              <ArrowRight size={16} aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
         <section aria-labelledby="workspaces-heading">
@@ -173,6 +184,7 @@ export function CommandCenterView({ onStartConversation, onNavigate }: { onStart
                 featured={index === 0}
                 onStartConversation={onStartConversation}
                 onNavigate={onNavigate}
+                onClose={onClose}
               />
             ))}
           </div>
@@ -189,7 +201,7 @@ export function CommandCenterView({ onStartConversation, onNavigate }: { onStart
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {secondaryDestinations.map((destination) => (
-              <DestinationCard key={destination.id} destination={destination} onStartConversation={onStartConversation} onNavigate={onNavigate} />
+              <DestinationCard key={destination.id} destination={destination} onStartConversation={onStartConversation} onNavigate={onNavigate} onClose={onClose} />
             ))}
           </div>
         </section>
