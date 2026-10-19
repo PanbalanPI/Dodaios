@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Settings2,
   Sparkles,
+  X,
 } from "lucide-react";
 import { useEventStore, type SectionId } from "@/store/events";
 
@@ -118,7 +119,7 @@ function DestinationCard({
  * It deliberately reads no fabricated status or task data: every card opens
  * the real section that owns that capability.
  */
-export function CommandCenterView() {
+export function CommandCenterView({ onStartConversation }: { onStartConversation: () => void }) {
   return (
     <main
       className="h-full min-h-0 overflow-y-auto bg-background"
@@ -141,7 +142,7 @@ export function CommandCenterView() {
           </div>
           <button
             type="button"
-            onClick={() => useEventStore.getState().setActiveSection("chats")}
+            onClick={onStartConversation}
             className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <MessageSquare size={17} aria-hidden="true" />
