@@ -189,7 +189,7 @@ function ProjectIntake({ onStartProject }: { onStartProject: (prompt: string) =>
     if (!brief.idea.trim() || saving) return;
     setSaving(true);
     setSaveStatus(null);
-    const title = brief.idea.trim().replace(/\\s+/g, " ").slice(0, 80);
+    const title = brief.idea.trim().replace(/\s+/g, " ").slice(0, 80);
     try {
       await createMemoryPage("project", title, buildProjectPrompt(brief));
       await queryClient.invalidateQueries({ queryKey: MEMORY_KEYS.all });
